@@ -33,9 +33,7 @@ jobs:
       # Install uv
       - uses: astral-sh/setup-uv@v5
       # Run a Python script
-      - run:
-          - uv run imdb_refresh.py
-          - rm *.tsv.gz
+      - run: uv run imdb_refresh.py; rm *.tsv.gz
 
       # Upload a specific page to GitHub Pages. Defaults to _site
       - uses: actions/upload-pages-artifact@v3
