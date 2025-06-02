@@ -1,0 +1,4 @@
+info.json
+*.csv
+*.gz
+node_modules/

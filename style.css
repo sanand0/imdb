@@ -1,0 +1,50 @@
+body {
+  margin-bottom: 50vh;
+}
+.main {
+  position: relative;
+}
+.cell {
+  vector-effect: non-scaling-stroke;
+  stroke-width: 1;
+  stroke: var(--bs-body-bg);
+  fill: var(--bs-danger);
+}
+.active {
+  fill: #7f2704;
+  stroke: var(--bs-body-color);
+}
+
+.brush .extent {
+  fill-opacity: 0.1;
+  vector-effect: non-scaling-stroke;
+  stroke: rgba(255, 0, 0, 0.2);
+}
+.table {
+  display: none;
+  position: absolute;
+  top: 100px;
+  background-color: var(--bs-body-bg);
+  width: auto;
+  max-width: 500px;
+  font-size: 12px;
+  -webkit-box-shadow: 1px 1px 2px 1px rgba(0, 0, 0, 0.4);
+  box-shadow: 1px 1px 2px 1px rgba(0, 0, 0, 0.4);
+}
+.table .movie td,
+.table .movie th {
+  white-space: nowrap;
+  padding: 0 8px;
+  text-align: right;
+}
+.rating,
+.vote {
+  pointer-events: none;
+}
+.rating path,
+.vote path {
+  stroke: #000;
+  stroke-width: 0.5;
+  stroke-dasharray: 2, 4;
+  stroke-linecap: round;
+}
