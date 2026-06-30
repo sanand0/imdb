@@ -10,6 +10,8 @@ on:
   workflow_dispatch:
 
 permissions:
+  # To commit outlier history to the data branch
+  contents: write
   # To deploy to GitHub Pages
   pages: write
   # To verify that deployment originated from the right source
@@ -43,3 +45,26 @@ jobs:
       # Deploy the built site to GitHub Pages. The `id:` is required to show the URL in the GitHub Actions UI
       - id: deployment
         uses: actions/deploy-pages@v4
+
+      - name: Commit outliers to data branch
+        if: github.event_name == 'schedule'
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          tmp=$(mktemp -d)
+          cp -R outliers "$tmp/outliers"
+          git fetch origin data:refs/remotes/origin/data || true
+          if git show-ref --verify --quiet refs/remotes/origin/data; then
+            git worktree add "$tmp/worktree" origin/data
+          else
+            git worktree add --detach "$tmp/worktree"
+            git -C "$tmp/worktree" switch --orphan data
+            git -C "$tmp/worktree" rm -rf . || true
+          fi
+          mkdir -p "$tmp/worktree/outliers"
+          cp -R "$tmp/outliers/." "$tmp/worktree/outliers/"
+          git -C "$tmp/worktree" add -f outliers
+          if ! git -C "$tmp/worktree" diff --cached --quiet; then
+            git -C "$tmp/worktree" commit -m "Update outliers $(date -u +%F)"
+            git -C "$tmp/worktree" push origin HEAD:data
+          fi

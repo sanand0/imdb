@@ -46,6 +46,7 @@ var raw_data,
   decades = " 2020s 2010s 2000s 1990s 1980s 1970s 1960s 1950s 1940s 1930s".split(/ /);
 
 const info = await fetch("info.json").then((r) => r.json());
+const outlierIds = new Set(Object.keys(info.outliers || {}));
 document.querySelector("#updated").setAttribute("datetime", info.updated);
 document.querySelector("#updated").textContent = d3.time.format("%d %b %Y")(new Date(info.updated));
 
@@ -76,6 +77,7 @@ d3.csv("movies.csv", function (data) {
   }
 
   d3.selectAll("#Genre, #Type, #Year").on("change", set_hash);
+  d3.select("#Outliers").on("change", draw);
   d3.selectAll("#Title").on("keyup", set_hash);
   d3.select(window).on("hashchange", draw).on("hashchange")();
 
@@ -144,6 +146,7 @@ function draw(filter) {
   if (i == 0) {
     return;
   }
+  var showOutliers = d3.select("#Outliers").property("checked");
   var row,
     cell = {},
     max = 0;
@@ -189,6 +192,7 @@ function draw(filter) {
     .enter()
     .append("rect")
     .classed("cell", true)
+    .classed("outliers", (d) => showOutliers && cell[d.key].some((row) => outlierIds.has(row.ID)))
     .attr("x", (d) => (width / xCells) * d.x)
     .attr("y", (d) => (height / yCells) * d.y)
     .attr("fill-opacity", (d) => opacity(count(d.key)))
