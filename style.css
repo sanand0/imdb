@@ -10,6 +10,9 @@ body {
   stroke: var(--bs-body-bg);
   fill: var(--bs-danger);
 }
+.cell.outliers {
+  stroke: var(--bs-body-color);
+}
 .active {
   fill: #7f2704;
   stroke: var(--bs-body-color);
