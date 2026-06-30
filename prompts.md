@@ -54,4 +54,8 @@ Use a `data/` branch instead of the main branch to commit the outliers/
 
 Deploy and test and see if it works. Let me know if you need me to do something (e.g. if you don't have permissions.)
 
+---
+
+I've committed and pushed. The workflow ran. But I don't see a data branch. What do I do?
+
 <!-- codex resume 019f165a-07d8-7e43-b796-93395c4dc5e7 --yolo -->
