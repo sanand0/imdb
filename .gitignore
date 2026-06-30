@@ -1,4 +1,5 @@
 info.json
 *.csv
 *.gz
+outliers/
 node_modules/
