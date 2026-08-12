@@ -1,5 +1,26 @@
 # Prompts
 
+## Update outliers, add years, 12 Aug 2026
+
+<!--
+cd ~/code/imdb/
+dev.sh -- codex --yolo --model gpt-5.6-sol --config model_reasoning_effort=medium
+-->
+
+Modify the script to update the .outliers dynamically. That is, when the filters are refreshed - e.g. a different genre / type / year / search is selected and the scatter plot is refreshed, compute the outliers for what is visible. That'll allow me to see the outliers in any specific filter.
+
+Also modify the tooltip to show the year before the title. So the columns will be Year, Title, Votes, Rating.
+
+--- <!-- steering -->
+
+Show the year AFTER the title column, as an integer.
+
+--- <!-- steering -->
+
+Right align the Title column header, Year column header, and Year values
+
+<!-- codex resume 019ff456-2116-7462-8891-bf34829341c1 --yolo -->
+
 ## Add outliers, 30 Jun 2026
 
 <!--

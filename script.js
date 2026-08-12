@@ -46,9 +46,26 @@ var raw_data,
   decades = " 2020s 2010s 2000s 1990s 1980s 1970s 1960s 1950s 1940s 1930s".split(/ /);
 
 const info = await fetch("info.json").then((r) => r.json());
-const outlierIds = new Set(Object.keys(info.outliers || {}));
 document.querySelector("#updated").setAttribute("datetime", info.updated);
 document.querySelector("#updated").textContent = d3.time.format("%d %b %Y")(new Date(info.updated));
+
+function outlierCellKeys(cells) {
+  var top = {},
+    right = {};
+  cells.forEach(function (cell) {
+    top[cell.x] = Math.min(top[cell.x] ?? 99, cell.y);
+    right[cell.y] = Math.max(right[cell.y] ?? -1, cell.x);
+  });
+  return new Set(
+    cells
+      .filter(
+        (cell) =>
+          (cell.y == top[cell.x] && (top[cell.x - 1] ?? 99) >= cell.y && (top[cell.x + 1] ?? 99) >= cell.y) ||
+          (cell.x == right[cell.y] && (right[cell.y - 1] ?? -1) <= cell.x && (right[cell.y + 1] ?? -1) <= cell.x)
+      )
+      .map((cell) => cell.key)
+  );
+}
 
 d3.csv("movies.csv", function (data) {
   // Add filters
@@ -181,18 +198,18 @@ function draw(filter) {
   }
 
   var opacity = d3.scale.pow().exponent(0.8).domain([0, max]).range([0.05, 1]).clamp(true);
+  var cellData = d3.keys(cell).map(function (key) {
+    var xy = key.split(",");
+    return { x: +xy[0], y: +xy[1], key: key };
+  });
+  var outliers = showOutliers ? outlierCellKeys(cellData) : new Set();
   var cells = grid
     .selectAll(".cell")
-    .data(
-      d3.keys(cell).map(function (d) {
-        var xy = d.split(",");
-        return { x: +xy[0], y: +xy[1], key: d };
-      })
-    )
+    .data(cellData)
     .enter()
     .append("rect")
     .classed("cell", true)
-    .classed("outliers", (d) => showOutliers && cell[d.key].some((row) => outlierIds.has(row.ID)))
+    .classed("outliers", (d) => outliers.has(d.key))
     .attr("x", (d) => (width / xCells) * d.x)
     .attr("y", (d) => (height / yCells) * d.y)
     .attr("fill-opacity", (d) => opacity(count(d.key)))
@@ -221,6 +238,10 @@ function draw(filter) {
       .attr("href", (d) => `http://www.imdb.com/title/${d.ID}/`)
       .attr("target", "_blank")
       .text((d) => d.Title);
+    rows
+      .append("td")
+      .classed("text-end", true)
+      .text((d) => (d.Year ? d3.format("d")(d.Year) : ""));
     rows.append("td").text((d) => comma(d.Votes));
     rows.append("td").text((d) => d.Rating);
     if (data.length > MAX) {
